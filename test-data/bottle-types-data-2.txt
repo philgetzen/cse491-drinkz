@@ -1,3 +1,7 @@
 # this file has, at the end, a blank line, which should be handled
 # (ignored!) by our loading script - just like these comments.
+Johnnie Walker
+Johnnie Walker,Black Label,blended scotch
+Johnnie Walker
+Johnnie Walker,Black Label,blended scotch
 Johnnie Walker,Black Label,blended scotch
