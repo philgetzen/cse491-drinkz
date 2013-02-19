@@ -156,11 +156,14 @@ def test_get_liquor_inventory():
     db.add_bottle_type('Johnnie Walker', 'Black Label', 'blended scotch')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
 
+    db.add_bottle_type('A', 'B', 'C')
+    db.add_to_inventory('A', 'B', '100 ml')
+
     x = []
     for mfg, liquor in db.get_liquor_inventory():
         x.append((mfg, liquor))
 
-    assert x == [('Johnnie Walker', 'Black Label')], x
+    assert x == [('Johnnie Walker', 'Black Label'), ('A', 'B')], x
 
 
 # Phil Getzen's Test Load Bottle Types 1
@@ -192,3 +195,19 @@ def test_script_load_inventory_1():
     exit_code = module.main([scriptpath, 'test-data/bottle-types-data-1.txt', 'test-data/inventory-data-2.txt'])
 
     assert exit_code == 0, 'non zero exit code %s' % exit_code
+
+
+def test_check_inventory_for_type():
+    db._reset_db
+
+    db.add_bottle_type('Johnnie Walker', 'Black Label', 'blended scotch')
+    db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
+
+    db.add_bottle_type('A', 'B', 'C')
+    db.add_to_inventory('A', 'B', '100 ml')
+
+    x = []
+    for mfg, liquor in db.check_inventory_for_type('blended scotch'):
+        x.append((mfg, liquor))
+
+    assert x == [('Johnnie Walker', 'Black Label')], x

@@ -111,3 +111,9 @@ def get_all_recipes():
     for r in _recipes_db:
         recipesSet.add(r.name)
     return recipesSet
+
+
+def check_inventory_for_type(type):
+    for (m, l) in _inventory_db:
+        if (m, l, type) in _bottle_types_db:
+            yield (m, l)
