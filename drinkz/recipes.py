@@ -1,6 +1,5 @@
 # from . import db
 
-
 class Recipe:
     def __init__(self, name, ing):
         self.name = name
