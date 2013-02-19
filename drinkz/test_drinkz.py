@@ -54,7 +54,7 @@ def test_get_liquor_amount_1():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
 
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == '1000 ml', amount
+    assert amount == 1000.0, amount
 
 
 def test_bulk_load_inventory_1():
@@ -80,7 +80,7 @@ def test_get_liquor_amount_2():
     n = load_bulk_data.load_inventory(fp)
 
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == '1000 ml', amount
+    assert amount == 1000.0, amount
 
 
 # Phil Getzen's Test Liquor Amount 3
@@ -92,7 +92,7 @@ def test_get_liquor_amount_3():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '25 oz')
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == '1739 ml', amount
+    assert amount == 1739.3375, amount
 
 
 # Phil Getzen's Test Liquor Amount 4
@@ -104,7 +104,7 @@ def test_get_liquor_amount_4():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '2 ml')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '0 oz')
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == '2 ml', amount
+    assert amount == 2.0, amount
 
 
 # Phil Getzen's Test Liquor Amount 5
@@ -116,7 +116,7 @@ def test_get_liquor_amount_5():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '0 ml')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '100 oz')
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == '2957 ml', amount
+    assert amount == 2957.35, amount
 
 
 # Phil Getzen's Test Liquor Amount 6
@@ -128,7 +128,7 @@ def test_get_liquor_amount_6():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '16 oz')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '32 oz')
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == '1419 ml', amount
+    assert amount == 1419.528, amount
 
 
 def test_bulk_load_bottle_types_1():

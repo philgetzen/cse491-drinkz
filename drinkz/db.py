@@ -2,16 +2,20 @@
 Database functionality for drinkz information.
 """
 
+from . import recipes
+
 # private singleton variables at module level
-_bottle_types_db = []
+_bottle_types_db = set()
 _inventory_db = {}
+_recipes_db = set()
 
 
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
-    global _bottle_types_db, _inventory_db
-    _bottle_types_db = []
+    global _bottle_types_db, _inventory_db, _recipes_db
+    _bottle_types_db = set()
     _inventory_db = {}
+    _recipes_db = set()
 
 
 # exceptions in Python inherit from Exception and generally don't need to
@@ -22,7 +26,7 @@ class LiquorMissing(Exception):
 
 def add_bottle_type(mfg, liquor, typ):
     "Add the given bottle type into the drinkz database."
-    _bottle_types_db.append((mfg, liquor, typ))
+    _bottle_types_db.add((mfg, liquor, typ))
 
 
 def _check_bottle_type_exists(mfg, liquor):
@@ -43,10 +47,12 @@ def add_to_inventory(mfg, liquor, amount):
         err = "Missing liquor: manufacturer '%s', name '%s'" % (mfg, liquor)
         raise LiquorMissing(err)
 
-    if amounts[1].lower() == "oz":
-        amountTotal += int(int(amounts[0]) * 29.5735)
-    elif amounts[1].lower() == "ml":
-        amountTotal += int(amounts[0])
+    if amounts[1].lower() == "ml":
+        amountTotal += float(amounts[0])
+    elif amounts[1].lower() == "oz":
+        amountTotal += float(amounts[0]) * 29.5735
+    elif amounts[1].lower() == "gallon":
+        amountTotal += float(amounts[0]) * 3785.41
 
     if (mfg, liquor) in _inventory_db:
         _inventory_db[(mfg, liquor)] += amountTotal
@@ -79,7 +85,7 @@ def get_liquor_amount(mfg, liquor):
     #             #Just return the amount given
     #             result += int(amounts[0])
     if (mfg, liquor) in _inventory_db:
-        return str(_inventory_db[(mfg, liquor)]) + " ml"
+        return _inventory_db[(mfg, liquor)]
     #Return a string of the result
     # return str(int(result)) + " ml"
 
@@ -88,3 +94,20 @@ def get_liquor_inventory():
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
     for (mfg, liquor) in _inventory_db:
         yield mfg, liquor
+
+
+def add_recipe(r):
+    _recipes_db.add(r)
+
+
+def get_recipe(name):
+    for r in _recipes_db:
+        if r.name == name:
+            return r
+
+
+def get_all_recipes():
+    recipesSet = set()
+    for r in _recipes_db:
+        recipesSet.add(r.name)
+    return recipesSet
