@@ -1,4 +1,5 @@
 import db
+import convert
 
 
 class Recipe:
@@ -34,7 +35,7 @@ class Recipe:
         for (t, a) in self.needIngredients:
             for (typ, amount) in listOfAmounts:
                 if t == typ:
-                    amountNeeded = float(db.convert_to_ml(a)) - float(amount)
+                    amountNeeded = float(convert.convert_to_ml(a)) - float(amount)
                     if amountNeeded > 0:
                         listOfNeeded.append((typ, amountNeeded))
         return listOfNeeded

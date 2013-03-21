@@ -4,7 +4,7 @@ Database functionality for drinkz information.
 Recipes are stored in a set because it allows us to have a name and a list of tuples per recipe.
 """
 
-from . import recipes
+from . import recipes, convert
 
 
 # private singleton variables at module level
@@ -51,7 +51,7 @@ def add_to_inventory(mfg, liquor, amount):
         err = "Missing liquor: manufacturer '%s', name '%s'" % (mfg, liquor)
         raise LiquorMissing(err)
 
-    amountTotal = convert_to_ml(amount)
+    amountTotal = convert.convert_to_ml(amount)
 
     if (mfg, liquor) in _inventory_db:
         _inventory_db[(mfg, liquor)] += amountTotal
@@ -102,20 +102,3 @@ def check_inventory_for_type(typ):
     for (m, l) in _inventory_db:
         if (m, l, typ) in _bottle_types_db:
             yield (m, l)
-
-
-def convert_to_ml(amount):
-
-    amounts = []
-    amounts = amount.split(" ")
-    amountTotal = 0
-
-    if amounts[1].lower() == "ml":
-        amountTotal += float(amounts[0])
-    elif amounts[1].lower() == "oz":
-        amountTotal += float(amounts[0]) * 29.5735
-    elif amounts[1].lower() == "gallon":
-        amountTotal += float(amounts[0]) * 3785.41
-    elif amounts[1].lower() == "liter":
-        amountTotal += float(amounts[0]) * 1000
-    return amountTotal
