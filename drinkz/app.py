@@ -1,10 +1,17 @@
 #! /usr/bin/env python
-from wsgiref.simple_server import make_server
+# from wsgiref.simple_server import make_server
+
+import generate_html
+
 import urlparse
 import simplejson
 
 dispatch = {
     '/' : 'index',
+    '/recipes.html' : 'recipes',
+    '/inventory.html' : 'inventory',
+    '/liquor_types.html' : 'liquor_types',
+    '/convert.html' : 'conversion_tool',
     '/content' : 'somefile',
     '/error' : 'error',
     '/helmet' : 'helmet',
@@ -33,19 +40,31 @@ class SimpleApp(object):
         return fn(environ, start_response)
             
     def index(self, environ, start_response):
-        data = """\
-Visit:
-<a href='content'>a file</a>,
-<a href='error'>an error</a>,
-<a href='helmet'>an image</a>,
-<a href='somethingelse'>something else</a>, or
-<a href='form'>a form...</a>
-<p>
-<img src='/helmet'>
-"""
+        data = generate_html.generate_index_html()
         start_response('200 OK', list(html_headers))
         return [data]
         
+    def recipes(self, environ, start_response):
+        data = generate_html.generate_recipes_html()
+        start_response('200 OK', list(html_headers))
+        return[data]
+
+    def inventory(self, environ, start_response):
+        data = generate_html.generate_inventory_html()
+        start_response('200 OK', list(html_headers))
+        return[data]
+
+    def liquor_types(self, environ, start_response):
+        data = generate_html.generate_liquor_types_html()
+        start_response('200 OK', list(html_headers))
+        return[data]
+
+    def conversion_tool(self, environ, start_response):
+        data = conversion_form()
+
+        start_response('200 OK', list(html_headers))
+        return [data]
+
     def somefile(self, environ, start_response):
         content_type = 'text/html'
         data = open('somefile.html').read()
@@ -83,6 +102,18 @@ Visit:
 
         content_type = 'text/html'
         data = "First name: %s; last name: %s.  <a href='./'>return to index</a>" % (firstname, lastname)
+
+        start_response('200 OK', list(html_headers))
+        return [data]
+
+    def recv_conversion(self, environ, start_response):
+        formdata = environ['QUERY_STRING']
+        results = urlparse.parse_qs(formdata)
+
+        amount = results['amount'][0]
+
+        content_type = 'text/html'
+        data = "Amount: %s <a href='./'>return to index</a>" % (amount)
 
         start_response('200 OK', list(html_headers))
         return [data]
@@ -142,14 +173,10 @@ Your last name? <input type='text' name='lastname' size='20'>
 </form>
 """
 
-if __name__ == '__main__':
-    import random, socket
-    port = random.randint(8000, 9999)
-    
-    app = SimpleApp()
-    
-    httpd = make_server('', port, app)
-    print "Serving on port %d..." % port
-    print "Try using a Web browser to go to http://%s:%d/" % \
-          (socket.getfqdn(), port)
-    httpd.serve_forever()
+def conversion_form():
+    return """
+    <form action = 'recv_conversion'>
+    Amount of Liquid: <input type = 'text' name='amount' size='20'>
+    <input type='submit'>
+    </form>
+    """

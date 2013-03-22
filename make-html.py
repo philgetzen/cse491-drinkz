@@ -38,12 +38,23 @@ drinkz.db.add_recipe(r2)
 #Index
 ####################################################
 
-fp = open('html/index.html', 'w')
-print >>fp, "<p><a href='recipes.html'>Recipes</a>"
-print >>fp, "<p><a href='inventory.html'>Inventory</a>"
-print >>fp, "<p><a href='liquor_types.html'>Liquor Types</a>"
 
-fp.close()
+def generate_index(data):
+    data = generate_index_links()
+    fp = open('html/index.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_index_links():
+    data = """\
+    Visit:
+    <p><a href='recipes.html'>Recipes</a>,
+    <p><a href='inventory.html'>Inventory</a>,
+    <p><a href='liquor_types.html'>Liquor Types</a>
+    """
+    return data
+
 
 ####################################################
 #Recipes
@@ -107,3 +118,6 @@ for (mfg, lqr, typ) in drinkz.db._bottle_types_db:
     print >>fp, mfg, "&#151;", lqr, "&#151;", typ
 print >>fp, "</ul>"
 fp.close()
+
+
+generate_index()
