@@ -5,6 +5,8 @@ import generate_html
 
 import urlparse
 import simplejson
+import db
+from os import path
 
 import convert
 
@@ -15,6 +17,11 @@ dispatch = {
     '/inventory.html' : 'inventory',
     '/liquor_types.html' : 'liquor_types',
     '/convert.html' : 'conversion_tool',
+    '/css/bootstrap.css': 'bootstrap_css',
+    '/css/bootstrap-responsive.css': 'bootstrap_responsive_css',
+    '/js/bootstrap.js': 'bootstrap_js',
+    '/img/glyphicons-halflings.png': 'glyphicons_halflings',
+    '/img/glyphicons-halflings-white.png': 'glyphicons_halflings_white',
     '/recv_conversion' : 'recv_conversion',
     '/content' : 'somefile',
     '/error' : 'error',
@@ -25,9 +32,17 @@ dispatch = {
 }
 
 html_headers = [('Content-type', 'text/html')]
+css_headers = [('Content-type', 'text/css')]
+js_headers = [('Content-type', 'text/javascript')]
+png_headers = [('Content-type', 'image/png')]
+
+base_dir = path.realpath(path.dirname(path.realpath(__file__)) + '/../')
+
 
 class SimpleApp(object):
     def __call__(self, environ, start_response):
+
+        generate_html.create_data()
 
         path = environ['PATH_INFO']
         fn_name = dispatch.get(path, 'error')
@@ -69,8 +84,37 @@ class SimpleApp(object):
         start_response('200 OK', list(html_headers))
         return [data]
 
+    def bootstrap_css(self, environ, start_response):
+        data = open(base_dir + '/css/bootstrap.css').read()
+
+        start_response('200 OK', list(css_headers))
+        return [data]
+
+    def bootstrap_responsive_css(self, environ, start_response):
+        data = open(base_dir + '/css/bootstrap-responsive.css').read()
+
+        start_response('200 OK', list(css_headers))
+        return [data]
+
+    def bootstrap_js(self, environ, start_response):
+        data = open(base_dir + '/js/bootstrap.js').read()
+
+        start_response('200 OK', list(js_headers))
+        return [data]
+
+    def glyphicons_halflings(self, environ, start_response):
+        data = open(base_dir + '/img/glyphicons-halflings.png', 'rb').read()
+
+        start_response('200 OK', list(png_headers))
+        return [data]
+
+    def glyphicons_halflings_white(self, environ, start_response):
+        data = open(base_dir + '/img/glyphicons-halflings-white.png', 'rb').read()
+
+        start_response('200 OK', list(png_headers))
+        return [data]
+
     def somefile(self, environ, start_response):
-        content_type = 'text/html'
         data = open('somefile.html').read()
 
         start_response('200 OK', list(html_headers))
@@ -120,7 +164,7 @@ class SimpleApp(object):
         amount_converted = convert.convert_to_ml(amount + " " + unit)
 
         content_type = 'text/html'
-        data = "Amount Entered: %s  %s</br>Amount Converted: %.2f ml<br/><a href='./'>return to index</a>" % (amount, unit, amount_converted)
+        data = conversion_result(amount, unit, amount_converted)
 
         start_response('200 OK', list(html_headers))
         return [data]
@@ -170,7 +214,16 @@ class SimpleApp(object):
 
     def rpc_add(self, a, b):
         return int(a) + int(b)
-    
+
+    def rpc_convert_units_to_ml(self, amount):
+        return convert.convert_to_ml(amount)
+
+    def rpc_get_recipe_names(self):
+        return list(db.get_all_recipes_by_name())
+
+    def rpc_get_liquor_inventory(self):
+        return dict(db.get_liquor_inventory())
+
 def form():
     return """
 <form action='recv'>
@@ -181,14 +234,55 @@ Your last name? <input type='text' name='lastname' size='20'>
 """
 
 def conversion_form():
-    return """
-    <form action = 'recv_conversion'>
-    Amount of Liquid: <input type = 'text' name='amount' size='20'>
-    <select name="unit">
-      <option value="oz">oz</option>
-      <option value="gallon">gallons</option>
-      <option value="liter">liters</option>
-    </select>
-    <input type='submit'>
-    </form>
+    header, footer = generate_html.load_header_footer()
+    data =  """\
+    <div class="row-fluid">
+        <div class="span8">
+            <form class="form-horizontal" action="/recv_conversion">
+                <div class="control-group">
+                    <label for="amount" class="control-label">Amount of Liquid:</label>
+                    <div class="controls">
+                        <input type="text" name="amount" id="amount" size="20">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="unit" class="control-label">Unit:</label>
+                    <div class="controls">
+                        <select name="unit" id="unit">
+                            <option value="oz">oz</option>
+                            <option value="gallon">gallons</option>
+                            <option value="liter">liters</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
     """
+
+    return header + data + footer
+
+def conversion_result(amount, unit, amount_converted):
+    header, footer = generate_html.load_header_footer()
+    amount_entered = "<h2>Amount Entered: %s %s</h2>" % (amount, unit)
+    amount_converted = "<h2>Amount Converted: %.2f mL</h2>" % amount_converted
+    data = """\
+    <div class="row-fluid">
+        <div class="hero-unit">
+    """
+    data += amount_entered
+    data += amount_converted
+    data += """\
+            <p><a href="/" class="btn btn-primary btn-large" style="margin-top: 2em;">Return to Home</a></p>
+        </div>
+    </div>
+    """
+
+    return header + data + footer

@@ -12,6 +12,6 @@ if __name__ == '__main__':
     
     httpd = make_server('', port, app)
     print "Serving on port %d..." % port
-    print "Try using a Web browser to go to http://%s:%d/" % \
+    print "Run this in your fucking browser http://%s:%d/" % \
           (socket.getfqdn(), port)
     httpd.serve_forever()
