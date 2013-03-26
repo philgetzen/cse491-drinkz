@@ -6,12 +6,16 @@ import generate_html
 import urlparse
 import simplejson
 
+import convert
+
+
 dispatch = {
     '/' : 'index',
     '/recipes.html' : 'recipes',
     '/inventory.html' : 'inventory',
     '/liquor_types.html' : 'liquor_types',
     '/convert.html' : 'conversion_tool',
+    '/recv_conversion' : 'recv_conversion',
     '/content' : 'somefile',
     '/error' : 'error',
     '/helmet' : 'helmet',
@@ -111,9 +115,12 @@ class SimpleApp(object):
         results = urlparse.parse_qs(formdata)
 
         amount = results['amount'][0]
+        unit = results['unit'][0]
+
+        amount_converted = convert.convert_to_ml(amount + " " + unit)
 
         content_type = 'text/html'
-        data = "Amount: %s <a href='./'>return to index</a>" % (amount)
+        data = "Amount Entered: %s  %s</br>Amount Converted: %.2f ml<br/><a href='./'>return to index</a>" % (amount, unit, amount_converted)
 
         start_response('200 OK', list(html_headers))
         return [data]
@@ -177,6 +184,11 @@ def conversion_form():
     return """
     <form action = 'recv_conversion'>
     Amount of Liquid: <input type = 'text' name='amount' size='20'>
+    <select name="unit">
+      <option value="oz">oz</option>
+      <option value="gallon">gallons</option>
+      <option value="liter">liters</option>
+    </select>
     <input type='submit'>
     </form>
     """
