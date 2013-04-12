@@ -1,0 +1,65 @@
+Feature 1: Drink Rating
+
+Bob wants to know if he should go to a party. He checks the average drink rating to see if the alcohol is up to his standards. After seeing that the average rating of drink recipes being served is 1.5 stars, he determines the party is for getting drunk, and not for casually consuming alcohol with friends. He would like a reliable way to determine which sort of party is going on based on the quality of alcohol available.
+
+Data Component:
+
+-Drink rating for recipes
+-Scheduled parties
+
+Internal API:
+
+-A way to store, retrieve and query the rating of a recipes and schedule of parties.
+-Get recipes that correspond to each party.
+
+What users can do:
+
+-Add party
+-Add recipes to a specific party
+-Rate recipes that have been added to a party
+-View created recipes
+-View available parties and recipes associated with them and their ratings
+
+JSON-RPC Functions:
+
+-rpc_add_party()
+-rpc_add_recipe_to_party()
+-rpc_add_rating_to_recipe()
+-rpc_average_ratings()
+
+
+
+
+
+Feature 2: Safety Rating
+
+Joe is tired of being taken advantage of by women at parties after a recent encounter with roofies. Therefore he has the need to know how safe future parties are. He'll need to know whether the venue has a history of drug use and the overall rating of the venue.
+
+Data Component:
+
+-Venue rating
+-Scheduled parties
+-Drug use poll
+
+Internal API:
+
+-A way to store, retrieve and query the rating of a venue and associated drug use, as well as a schedule of parties.
+-Get ratings that correspond to each venue.
+-Get poll results relevant to each venue on drug use.
+-Get parties scheduled at a venue.
+
+What users can do:
+
+-Add venue
+-Add a party to a venue
+-Rate venues
+-Answer a poll on drug use for a specific venue
+-View venue rating, poll and parties associated with venue
+
+JSON-RPC Functions:
+
+-rpc_add_party_to_venue()
+-rpc_add_rating_to_venue()
+-rpc_add_poll_to_venue()
+-rpc_average_ratings_of_venue()
+-rpc_average_poll_results()
