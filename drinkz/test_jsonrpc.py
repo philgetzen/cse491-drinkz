@@ -55,3 +55,16 @@ def test_get_liquor_inventory():
     assert 'Rossi' in result['result'], result['result']
     assert ('Content-Type', 'application/json') in headers, headers
     assert status == '200 OK'
+
+def test_add_liquor_type():
+    status, headers, result = jsonrpc('add_liquor_type', ['Val Kilmer', 'Pineapple Label', 'Absinthe'])
+    assert  result['result'] == True, result['result']
+
+def test_add_liquor_inventory():
+    status, headers, result = jsonrpc('add_liquor_type', ['Val Kilmer', 'Pineapple Label', 'Absinthe'])
+    status, headers, result = jsonrpc('add_liquor_inventory', ['Val Kilmer', 'Pineapple Label', '200 ml'])
+    assert result['result'] == True, result['result']
+
+def test_add_recipe():
+    status, headers, result = jsonrpc('add_recipe', ['dumb', '[(stupid, 20 oz)]'])
+    assert result['result'] ==  True, result['result']

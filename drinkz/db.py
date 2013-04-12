@@ -13,6 +13,9 @@ _bottle_types_db = set()
 _inventory_db = {}
 _recipes_db = set()
 
+#  temporary storage for results of a form to display in jinja template, clear before use
+_tmp_results = []
+
 
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
@@ -20,6 +23,7 @@ def _reset_db():
     _bottle_types_db = set()
     _inventory_db = {}
     _recipes_db = set()
+    _tmp_results = []
 
 
 def save_db(filename):
@@ -126,3 +130,29 @@ def check_inventory_for_type(typ):
     for (m, l) in _inventory_db:
         if (m, l, typ) in _bottle_types_db:
             yield (m, l)
+
+def get_liquor_type_amount(typ):
+    amountTotal = 0
+    for (m, l) in _inventory_db:
+        if (m, l, typ) in _bottle_types_db:
+            amountTotal += _inventory_db[(m, l)]
+    return amountTotal
+
+
+def available_recipes():
+    recipeSet = set()
+    add = True
+    for recipe in _recipes_db:
+        add = True
+        for (typ, amount) in recipe.needIngredients:
+            liquors = check_inventory_for_type(typ)
+            # If we don't have that type in our inventory we can't make the recipe
+            if not liquors:
+                add = False
+                break
+            if get_liquor_type_amount(typ) < convert.convert_to_ml(amount):
+                add = False
+                break
+        if add:
+            recipeSet.add(recipe)
+    return recipeSet

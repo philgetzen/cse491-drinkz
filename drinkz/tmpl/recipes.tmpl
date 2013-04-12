@@ -1,0 +1,21 @@
+{% extends "layout.tmpl" %}
+
+{% block content %}
+<div class="row-fluid">
+  <div class="hero-unit">
+    <h2>Available Recipes</h2>
+    <ul>
+      {% for recipe in db %}
+      <li>
+        {{ recipe.name }} &#151;
+        {% if recipe.need_ingredients() == [] %}
+        Yes
+        {% else %}
+        No
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

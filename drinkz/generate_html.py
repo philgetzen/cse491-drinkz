@@ -1,8 +1,12 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 from os import mkdir, path
+
+from jinja2 import Environment, PackageLoader
+
 import drinkz.db
 from drinkz import recipes
+import urllib2
 
 try:
     mkdir('html')
@@ -11,11 +15,11 @@ except OSError:
     pass
 
 base_dir = path.realpath(path.dirname(path.realpath(__file__)) + '/../')
+env = Environment(loader=PackageLoader('drinkz', 'tmpl'))
 
 ####################################################
 #Create Data
 ####################################################
-
 
 def create_data():
     try:
@@ -39,22 +43,11 @@ def create_data():
         r2 = recipes.Recipe('vodka martini', [('unflavored vodka', '6 oz'), ('vermouth', '1.5 oz')])
         drinkz.db.add_recipe(r)
         drinkz.db.add_recipe(r2)
-
-####################################################
-#Header/Footer nonsense
-####################################################
-
-def load_header_footer():
-    header = open(base_dir + '/html/header.html').read()
-    footer = open(base_dir + '/html/footer.html').read()
-
-    return (header, footer)
-
+        
 
 ####################################################
 #Index
 ####################################################
-
 
 def generate_index():
     data = generate_index_html()
@@ -64,16 +57,7 @@ def generate_index():
 
 
 def generate_index_html():
-    header, footer = load_header_footer()
-    data = """\
-    <div class="row-fluid">
-        <div class="hero-unit">
-            <h1>can i haz drinkz?</h1>
-        </div>
-    </div>
-    """
-
-    return header + data + footer
+    return env.get_template('index.tmpl').render().encode('ascii', 'ignore')
 
 
 ####################################################
@@ -88,30 +72,8 @@ def generate_recipes():
 
 
 def generate_recipes_html():
-    header, footer = load_header_footer()
-    data = """\
-    <div class="row-fluid">
-        <div class="hero-unit">
-            <h2>Available Recipes</h2>
-            <ul>
-    """
+    return env.get_template('recipes.tmpl').render(db=drinkz.db._recipes_db).encode('ascii', 'ignore')
 
-    for r in drinkz.db._recipes_db:
-        data += "<li>"
-        data += r.name + "&#151;"
-        if r.need_ingredients() == []:
-            data += "Yes"
-        else:
-            data += "No"
-        data += "</li>"
-
-    data += """\
-            </ul>
-        </div>
-    </div>
-    """
-    
-    return header + data + footer
 
 ####################################################
 #Inventory
@@ -125,28 +87,7 @@ def generate_inventory():
 
 
 def generate_inventory_html():
-    header, footer = load_header_footer()
-    data = """\
-    <div class="row-fluid">
-        <div class="hero-unit">
-            <h2>Available Liquor Amounts</h2>
-            <ul>
-    """
-
-    for (mfg, liquor) in drinkz.db._inventory_db:
-        amount = drinkz.db.get_liquor_amount(mfg, liquor)
-        data += "<li>"
-        data += mfg + "&#151;" + liquor + "&#151;" + str(amount)
-        data += "</li>"
-
-    data += """\
-            </ul>
-        </div>
-    </div>
-    """
-    
-    return header + data + footer
-
+    return env.get_template('inventory.tmpl').render(db=drinkz.db, inventory=drinkz.db._inventory_db).encode('ascii', 'ignore')
 
 ####################################################
 #Liquor Types
@@ -160,22 +101,109 @@ def generate_liquor_types():
 
 
 def generate_liquor_types_html():
-    header, footer = load_header_footer()
-    data = """\
-    <div class="row-fluid">
-        <div class="hero-unit">
-            <h2>Available Liquor Types</h2>
-            <ul>
-    """
+    return env.get_template('liquor_types.tmpl').render(liquor_types=drinkz.db._bottle_types_db).encode('ascii', 'ignore')
 
-    for (mfg, lqr, typ) in drinkz.db._bottle_types_db:
-        data +="<li>"
-        data += mfg + "&#151;" + lqr + "&#151;" + typ
 
-    data += """\
-            </ul>
-        </div>
-    </div>
-    """
+####################################################
+#Conversion Form
+####################################################
+def generate_conversion_form():
+    data = generate_conversion_form_html()
+    fp = open('html/convert.html', 'w')
+    print >>fp, data
+    fp.close()
 
-    return header + data + footer
+
+def generate_conversion_form_html():
+    return env.get_template('conversion_form.tmpl').render().encode('ascii', 'ignore')
+
+####################################################
+#Conversion Response
+####################################################
+def generate_conversion_result():
+    data = generate_conversion_form_html()
+    fp = open('html/convert_result.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_conversion_result_html():
+    return env.get_template('conversion_result.tmpl').render(results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+
+####################################################
+#Add Liquor Type Form
+####################################################
+def generate_liquor_type_form():
+    data = generate_liquor_type_form_html()
+    fp = open('html/liquor_types.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_liquor_type_form_html():
+    return env.get_template('liquor_type_form.tmpl').render().encode('ascii', 'ignore')
+
+####################################################
+#Add Liquor Type Response
+####################################################
+def generate_liquor_type_result():
+    data = generate_liquor_type_form_html()
+    fp = open('html/liquor_type_result.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_liquor_type_result_html():
+    return env.get_template('liquor_type_result.tmpl').render(results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+
+####################################################
+#Add Liquor Inventory Form
+####################################################
+def generate_liquor_inventory_form():
+    data = generate_liquor_inventory_form_html()
+    fp = open('html/liquor_inventory.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_liquor_inventory_form_html():
+    return env.get_template('liquor_inventory_form.tmpl').render(quote=urllib2.quote, bottle_types=drinkz.db._bottle_types_db).encode('ascii', 'ignore')
+
+####################################################
+#Add Liquor Inventory Response
+####################################################
+def generate_liquor_inventory_result():
+    data = generate_liquor_inventory_form_html()
+    fp = open('html/liquor_inventory_result.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_liquor_inventory_result_html():
+    return env.get_template('liquor_inventory_result.tmpl').render(unquote=urllib2.unquote, results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+
+####################################################
+#Add Recipe Form
+####################################################
+def generate_recipe_form():
+    data = generate_recipe_form_html()
+    fp = open('html/recipe.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_recipe_form_html():
+    return env.get_template('recipe_form.tmpl').render(bottle_types=drinkz.db._bottle_types_db).encode('ascii', 'ignore')
+
+####################################################
+#Add Recipe Response
+####################################################
+def generate_recipe_result():
+    data = generate_recipe_form_html()
+    fp = open('html/recipe_result.html', 'w')
+    print >>fp, data
+    fp.close()
+
+
+def generate_recipe_result_html():
+    return env.get_template('recipe_result_form.tmpl').render(results=drinkz.db._tmp_results).encode('ascii', 'ignore')

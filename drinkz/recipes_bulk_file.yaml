@@ -1,0 +1,5 @@
+recipes:
+    - name: scotch on the rocks
+      ingredients: ((blended scotch, 2 oz))
+    - name: vodka martini
+      ingredients: ((unflavored vodka, 6 oz), (vermouth, 1.5 oz))

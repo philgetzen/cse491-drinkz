@@ -1,0 +1,17 @@
+{% extends "layout.tmpl" %}
+
+{% block content %}
+	<div class="row-fluid">
+		<div class="hero-unit">
+			<h2>Recipe Added: </h2>
+			<h4>Name: {{ results[0] }}</h4>
+			<h4>Ingredients: </h4>
+
+			 {% for (typ, amount) in results[1] %}
+			 	<h5 style="padding-left: 3em">Bottle Type: {{ typ }} &#151; Amount: {{ amount }}</h5>
+                          	{% endfor %}
+
+			<p><a href="/" class="btn btn-primary btn-large" style="margin-top: 2em;">Return to Home</a></p>
+		</div>
+	</div>
+{% endblock %}

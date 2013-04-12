@@ -12,7 +12,7 @@ sys.path.insert(0, 'bin/')  # allow _mypath to be loaded; @CTB hack hack hack
 from cStringIO import StringIO
 import imp
 
-from . import db, load_bulk_data
+from . import db, load_bulk_data, recipes
 
 
 def test_foo():
@@ -211,3 +211,45 @@ def test_check_inventory_for_type():
         x.append((mfg, liquor))
 
     assert x == [('Johnnie Walker', 'Black Label')], x
+
+
+def test_get_liquor_type_amount():
+    db._reset_db()
+
+    db.add_bottle_type('Johnnie Walker', 'Black Label', 'blended scotch')
+    db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
+
+    db.add_bottle_type('Foo Man Shu', 'White Label', 'blended scotch')
+    db.add_to_inventory('Foo Man Shu', 'White Label', '1500 ml')
+
+    Amount = db.get_liquor_type_amount("blended scotch")
+
+    assert Amount == 2500, Amount
+
+
+def test_available_recipes():
+    recipeSet = set()
+
+    db._reset_db()
+
+    db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
+    db.add_to_inventory('Johnnie Walker', 'black label', '500 ml')
+
+    db.add_bottle_type('Uncle Herman\'s', 'moonshine', 'blended scotch')
+    db.add_to_inventory('Uncle Herman\'s', 'moonshine', '5 liter')
+
+    db.add_bottle_type('Gray Goose', 'vodka', 'unflavored vodka')
+    db.add_to_inventory('Gray Goose', 'vodka', '1 liter')
+
+    db.add_bottle_type('Rossi', 'extra dry vermouth', 'vermouth')
+    db.add_to_inventory('Rossi', 'extra dry vermouth', '24 oz')
+
+    r = recipes.Recipe('scotch on the rocks', [('blended scotch', '2 oz')])
+    r2 = recipes.Recipe('vodka martini', [('unflavored vodka', '6 oz'), ('vermouth', '1.5 oz')])
+    db.add_recipe(r)
+    db.add_recipe(r2)
+
+    recipeSet = db.available_recipes()
+
+    assert r in recipeSet, recipeSet
+    assert r2 in recipeSet, recipeSet

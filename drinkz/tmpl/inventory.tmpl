@@ -1,0 +1,16 @@
+{% extends "layout.tmpl" %}
+
+{% block content %}
+<div class="row-fluid">
+  <div class="hero-unit">
+    <h2>Available Liquor Amounts</h2>
+    <ul>
+      {% for (mfg, liquor) in inventory %}
+      <li>
+        {{ mfg }}&#151;{{ liquor }}&#151;{{ db.get_liquor_amount(mfg, liquor) }} mL
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

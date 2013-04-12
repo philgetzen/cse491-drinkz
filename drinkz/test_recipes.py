@@ -4,6 +4,7 @@ Tests basic recipe API.
 
 import unittest
 from . import db, recipes
+import load_bulk_data
 
 class TestBasicRecipeStuff(unittest.TestCase):
     def setUp(self):                    # This is run once per test, before.
@@ -121,3 +122,11 @@ class TestIngredients(object):
 
         missing = r.need_ingredients()
         assert missing == [('blended scotch', 500.0)]
+
+    def test_load_bulk_recipes(self):
+        db._reset_db()
+
+        result = load_bulk_data.load_bulk_recipes('drinkz/recipes_bulk_file.yaml')
+
+        assert  result == 2, result
+        assert  db._recipes_db != [], db._recipes_db

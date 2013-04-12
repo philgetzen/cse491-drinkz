@@ -1,0 +1,11 @@
+{% extends "layout.tmpl" %}
+
+{% block content %}
+<div class="row-fluid">
+  <div class="hero-unit">
+    <h2>Amount Entered: {{ results[0] }} {{ results[1] }}</h2>
+    <h2>Amount Converted: {{ results[2] }} mL</h2>
+    <p><a href="/" class="btn btn-primary btn-large" style="margin-top: 2em;">Return to Home</a></p>
+  </div>
+</div>
+{% endblock %}

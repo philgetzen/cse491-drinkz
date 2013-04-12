@@ -1,0 +1,7 @@
+From cse491-drinkz:
+
+python bin/load-bulk-recipes drinkz/recipes_bulk_file.yaml
+
+
+Test given in test_recipes.py:
+test_bulk_load_recipes

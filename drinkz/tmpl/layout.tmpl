@@ -32,24 +32,24 @@
               <li><a href="./inventory.html">Inventory</a></li>
               <li><a href="./liquor_types.html">Liquor Types</a></li>
               <li><a href="./convert.html">Conversion Tool</a></li>
+              <li><a href="./liquor_type_form.html">Add Liquor Type</a></li>
+              <li><a href="./liquor_inventory_form.html">Add Liquor Inventory</a></li>
+              <li><a href="./recipe_form.html">Add Recipe</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
 
-    <div class="container-fluid">    <div class="row-fluid">
-        <div class="hero-unit">
-            <h2>Available Recipes</h2>
-            <ul>
-    <li>scotch on the rocks&#151;Yes</li>            </ul>
-        </div>
-    </div>
-          <footer>
+    <div class="container-fluid">
+
+      {% block content %}
+      {% endblock %}
+      
+      <footer>
         <hr>
         <p>Copyright &copy; 2013 Crackhouse</p>
       </footer>
-
     </div> <!-- /container -->
 
     <script src="/js/bootstrap.js"></script>

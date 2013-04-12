@@ -1,0 +1,36 @@
+{% extends "layout.tmpl" %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="span8">
+            <form class="form-horizontal" action="/recv_liquor_type">
+                <div class="control-group">
+                    <label for="manufacturer" class="control-label">Manufacturer:</label>
+                    <div class="controls">
+                        <input type="text" name="manufacturer" id="manufacturer" size="20">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="liquor" class="control-label">Liquor:</label>
+                    <div class="controls">
+                        <input type="text" name="liquor" id="liquor" size="20">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="type" class="control-label">Type:</label>
+                    <div class="controls">
+                        <input type="text" name="type" id="type" size="20">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
