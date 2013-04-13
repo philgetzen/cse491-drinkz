@@ -1,0 +1,21 @@
+To start server (Make sure you are in ENV491) from cse491-drinkz:
+python bin/server.py
+
+Testing:
+Once the server is running, open a new tab/window and run,
+python bin/test_server.py hostname port GET page
+Example: python bin/test_server.py arctic 8888 GET /recipes
+
+Server Parameters:
+GET and the destination
+Example: GET /[path]
+
+Available paths:
+GET /
+GET /recipes
+GET /inventory
+GET /liquor_types
+GET /convert
+GET /liquor_type_form
+GET /liquor_inventory_form
+GET /recipe_form

@@ -4,7 +4,7 @@ Database functionality for drinkz information.
 Recipes are stored in a set because it allows us to have a name and a list of tuples per recipe.
 """
 
-from . import recipes, convert
+import recipes, convert
 
 from cPickle import dump, load
 

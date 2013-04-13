@@ -4,8 +4,8 @@ from os import mkdir, path
 
 from jinja2 import Environment, PackageLoader
 
-import drinkz.db
-from drinkz import recipes
+import db
+import recipes
 import urllib2
 
 try:
@@ -15,6 +15,7 @@ except OSError:
     pass
 
 base_dir = path.realpath(path.dirname(path.realpath(__file__)) + '/../')
+print base_dir
 env = Environment(loader=PackageLoader('drinkz', 'tmpl'))
 
 ####################################################
@@ -23,26 +24,26 @@ env = Environment(loader=PackageLoader('drinkz', 'tmpl'))
 
 def create_data():
     try:
-        drinkz.db.load_db('database')
+        db.load_db('database')
     except Exception:
-        drinkz.db._reset_db()
+        db._reset_db()
 
-        drinkz.db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
-        drinkz.db.add_to_inventory('Johnnie Walker', 'black label', '500 ml')
+        db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
+        db.add_to_inventory('Johnnie Walker', 'black label', '500 ml')
 
-        drinkz.db.add_bottle_type('Uncle Herman\'s', 'moonshine', 'blended scotch')
-        drinkz.db.add_to_inventory('Uncle Herman\'s', 'moonshine', '5 liter')
+        db.add_bottle_type('Uncle Herman\'s', 'moonshine', 'blended scotch')
+        db.add_to_inventory('Uncle Herman\'s', 'moonshine', '5 liter')
 
-        drinkz.db.add_bottle_type('Gray Goose', 'vodka', 'unflavored vodka')
-        drinkz.db.add_to_inventory('Gray Goose', 'vodka', '1 liter')
+        db.add_bottle_type('Gray Goose', 'vodka', 'unflavored vodka')
+        db.add_to_inventory('Gray Goose', 'vodka', '1 liter')
 
-        drinkz.db.add_bottle_type('Rossi', 'extra dry vermouth', 'vermouth')
-        drinkz.db.add_to_inventory('Rossi', 'extra dry vermouth', '24 oz')
+        db.add_bottle_type('Rossi', 'extra dry vermouth', 'vermouth')
+        db.add_to_inventory('Rossi', 'extra dry vermouth', '24 oz')
 
         r = recipes.Recipe('scotch on the rocks', [('blended scotch', '2 oz')])
         r2 = recipes.Recipe('vodka martini', [('unflavored vodka', '6 oz'), ('vermouth', '1.5 oz')])
-        drinkz.db.add_recipe(r)
-        drinkz.db.add_recipe(r2)
+        db.add_recipe(r)
+        db.add_recipe(r2)
         
 
 ####################################################
@@ -72,7 +73,7 @@ def generate_recipes():
 
 
 def generate_recipes_html():
-    return env.get_template('recipes.tmpl').render(db=drinkz.db._recipes_db).encode('ascii', 'ignore')
+    return env.get_template('recipes.tmpl').render(db=db._recipes_db).encode('ascii', 'ignore')
 
 
 ####################################################
@@ -87,7 +88,7 @@ def generate_inventory():
 
 
 def generate_inventory_html():
-    return env.get_template('inventory.tmpl').render(db=drinkz.db, inventory=drinkz.db._inventory_db).encode('ascii', 'ignore')
+    return env.get_template('inventory.tmpl').render(db=db, inventory=db._inventory_db).encode('ascii', 'ignore')
 
 ####################################################
 #Liquor Types
@@ -101,7 +102,7 @@ def generate_liquor_types():
 
 
 def generate_liquor_types_html():
-    return env.get_template('liquor_types.tmpl').render(liquor_types=drinkz.db._bottle_types_db).encode('ascii', 'ignore')
+    return env.get_template('liquor_types.tmpl').render(liquor_types=db._bottle_types_db).encode('ascii', 'ignore')
 
 
 ####################################################
@@ -128,7 +129,7 @@ def generate_conversion_result():
 
 
 def generate_conversion_result_html():
-    return env.get_template('conversion_result.tmpl').render(results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+    return env.get_template('conversion_result.tmpl').render(results=db._tmp_results).encode('ascii', 'ignore')
 
 ####################################################
 #Add Liquor Type Form
@@ -154,7 +155,7 @@ def generate_liquor_type_result():
 
 
 def generate_liquor_type_result_html():
-    return env.get_template('liquor_type_result.tmpl').render(results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+    return env.get_template('liquor_type_result.tmpl').render(results=db._tmp_results).encode('ascii', 'ignore')
 
 ####################################################
 #Add Liquor Inventory Form
@@ -167,7 +168,7 @@ def generate_liquor_inventory_form():
 
 
 def generate_liquor_inventory_form_html():
-    return env.get_template('liquor_inventory_form.tmpl').render(quote=urllib2.quote, bottle_types=drinkz.db._bottle_types_db).encode('ascii', 'ignore')
+    return env.get_template('liquor_inventory_form.tmpl').render(quote=urllib2.quote, bottle_types=db._bottle_types_db).encode('ascii', 'ignore')
 
 ####################################################
 #Add Liquor Inventory Response
@@ -180,7 +181,7 @@ def generate_liquor_inventory_result():
 
 
 def generate_liquor_inventory_result_html():
-    return env.get_template('liquor_inventory_result.tmpl').render(unquote=urllib2.unquote, results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+    return env.get_template('liquor_inventory_result.tmpl').render(unquote=urllib2.unquote, results=db._tmp_results).encode('ascii', 'ignore')
 
 ####################################################
 #Add Recipe Form
@@ -193,7 +194,7 @@ def generate_recipe_form():
 
 
 def generate_recipe_form_html():
-    return env.get_template('recipe_form.tmpl').render(bottle_types=drinkz.db._bottle_types_db).encode('ascii', 'ignore')
+    return env.get_template('recipe_form.tmpl').render(bottle_types=db._bottle_types_db).encode('ascii', 'ignore')
 
 ####################################################
 #Add Recipe Response
@@ -206,4 +207,4 @@ def generate_recipe_result():
 
 
 def generate_recipe_result_html():
-    return env.get_template('recipe_result_form.tmpl').render(results=drinkz.db._tmp_results).encode('ascii', 'ignore')
+    return env.get_template('recipe_result_form.tmpl').render(results=db._tmp_results).encode('ascii', 'ignore')
