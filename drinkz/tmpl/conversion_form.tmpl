@@ -1,9 +1,46 @@
 {% extends "layout.tmpl" %}
+{% block head %}
+ <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    $("#submit").click(function(){
+        alert("The element isn't read yet");
+    });
 
+</script>
+<script>
+$(function(){
+    $("#submit").click(function(){
+        // $.post(location.host + "/rpc",
+        // { 
+        //     url: location.host, 
+
+        //     data: {"params": ["10 oz"], "method": "convert_units_to_ml", "id": 1},  // id is needed !!
+
+        //     type:"POST",
+
+        //     dataType:"json",
+        //     success:  function (data)       { alert("The result is : " + data.result);},
+        //     error: function (err)  { alert ("Error");}
+        // }
+        var myData = {"params": ["10 oz"], "method": "convert_units_to_ml", "id": 1};
+        $.ajax({
+            url: "http://" + location.host + "/rpc", 
+
+            data: myData,  // id is needed !!
+
+            type:"POST",
+
+            dataType:"application/json",
+            success:  function (data)       { alert("The result is : " + data.result);},
+            error: function (err)  { alert ("Error");}
+         });
+    });
+});
+</script>
+{% endblock %}
 {% block content %}
     <div class="row-fluid">
         <div class="span8">
-            <form class="form-horizontal" action="/recv_conversion">
+            <form class="form-horizontal">
                 <div class="control-group">
                     <label for="amount" class="control-label">Amount of Liquid:</label>
                     <div class="controls">
@@ -24,10 +61,11 @@
 
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        
                     </div>
                 </div>
             </form>
+            <input id="submit" value="Submit" type="button" name="submit" class="btn btn-primary" />
         </div>
     </div>
 {% endblock %}

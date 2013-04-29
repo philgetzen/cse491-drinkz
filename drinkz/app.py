@@ -282,6 +282,7 @@ class SimpleApp(object):
             body = None
             if environ.get('CONTENT_LENGTH'):
                 length = int(environ['CONTENT_LENGTH'])
+                print "Length: ", length
                 body = environ['wsgi.input'].read(length)
                 response = self._dispatch(body) + '\n'
                 start_response('200 OK', [('Content-Type', 'application/json')])
