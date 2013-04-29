@@ -282,7 +282,7 @@ class SimpleApp(object):
             body = None
             if environ.get('CONTENT_LENGTH'):
                 length = int(environ['CONTENT_LENGTH'])
-                print "Length: ", length
+                # print "Length: ", length
                 body = environ['wsgi.input'].read(length)
                 response = self._dispatch(body) + '\n'
                 start_response('200 OK', [('Content-Type', 'application/json')])
@@ -305,6 +305,8 @@ class SimpleApp(object):
 
         method = rpc_request['method']
         params = rpc_request['params']
+
+        # print "Params: ", params
         
         rpc_fn_name = 'rpc_' + method
         fn = getattr(self, rpc_fn_name)

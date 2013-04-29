@@ -4,6 +4,8 @@ import socket
 import time
 from drinkz.app import SimpleApp
 from StringIO import StringIO
+import json
+import ast
 
 the_app = SimpleApp()
 
@@ -34,7 +36,7 @@ while True:
     # now, parse the HTTP request.
     lines = buffer.splitlines()
     request_line = lines[0]
-    print "Lines: ", request_line
+    # print "Lines: ", request_line
     request_type, path, protocol = request_line.split()
     print 'GOT', request_type, path, protocol
 
@@ -47,12 +49,17 @@ while True:
     environ = {}
 
     if request_type == "POST":
-        print 'Request Headers: ', request_headers
-        user_agent, host, p, content, length, post_form, wsgi_input = request_headers
-        print "Some random shit: ", user_agent, host, p, c, length, post_form, wsgi_input
+        # print 'Request Headers: ', request_headers
+        # user_agent, host, p, content, length, post_form, wsgi_input = request_headers
+        # print "Some random shit: ", user_agent, host, p, c, length, post_form, wsgi_input
+        lengthList = [cont for cont in request_headers if "Content-Length" in cont]
+        length = lengthList[0]
         numberList = [int(i) for i in length.split() if i.isdigit()]
         number = numberList[0]
         environ['CONTENT_LENGTH'] = number
+
+        wsgi_input = request_headers[-1]
+
         environ['wsgi.input'] = StringIO(wsgi_input)
 
     environ['PATH_INFO'] = path
@@ -74,10 +81,17 @@ while True:
         h = "%s: %s" % (k, v)
         response_headers.append(h)
 
-    response = "\r\n".join(response_headers) + "\r\n\r\n" + "".join(results)
-
-    print "Header: ", response_headers
-
     c.send("HTTP/1.0 %s\r\n" % d['status'])
+
+    if request_type == "POST":
+        result_dict = json.loads(''.join(results))
+        result_dict["success"] = True
+        
+        response = "\r\n".join(response_headers) + "\r\n\r\n" + "".join(json.dumps(result_dict))
+    else:
+        response = "\r\n".join(response_headers) + "\r\n\r\n" + "".join(results)
+
+    # print "Header: ", response_headers
+
     c.send(response)
     c.close()
