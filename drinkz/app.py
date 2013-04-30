@@ -48,10 +48,10 @@ firstRun = True
 
 class SimpleApp(object):
     def __call__(self, environ, start_response):
-        global firstRun
-        if firstRun:
-            generate_html.create_data()
-            firstRun = False
+        # global firstRun
+        # if firstRun:
+        #     generate_html.create_data()
+        #     firstRun = False
 
         path = environ['PATH_INFO']
         fn_name = dispatch.get(path, 'error')
@@ -342,7 +342,14 @@ class SimpleApp(object):
     def rpc_add_recipe(self, name, Ingredients):
         r = recipes.Recipe(name, Ingredients)
         db.add_recipe(r)
-        return r in db._recipes_db
+
+        recipeSet = db.get_all_recipes()
+
+        for rec in recipeSet:
+            if rec.name == name:
+                return True
+
+        return False
 
 
 def form():

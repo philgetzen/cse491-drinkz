@@ -5,7 +5,6 @@ import time
 from drinkz.app import SimpleApp
 from StringIO import StringIO
 import json
-import ast
 
 the_app = SimpleApp()
 
@@ -35,6 +34,9 @@ while True:
 
     # now, parse the HTTP request.
     lines = buffer.splitlines()
+    if(len(lines) < 1):
+        print "Bad request"
+        continue
     request_line = lines[0]
     # print "Lines: ", request_line
     request_type, path, protocol = request_line.split()
@@ -65,7 +67,6 @@ while True:
     environ['PATH_INFO'] = path
     environ['QUERY_STRING'] = query_string
     environ['REQUEST_METHOD'] = request_type
-    
 
     d = {}
 
@@ -86,7 +87,7 @@ while True:
     if request_type == "POST":
         result_dict = json.loads(''.join(results))
         result_dict["success"] = True
-        
+
         response = "\r\n".join(response_headers) + "\r\n\r\n" + "".join(json.dumps(result_dict))
     else:
         response = "\r\n".join(response_headers) + "\r\n\r\n" + "".join(results)

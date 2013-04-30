@@ -9,19 +9,6 @@
 <script>
 $(function(){
     $("#submit").click(function(){
-        // $.post(location.host + "/rpc",
-        // { 
-        //     url: location.host, 
-
-        //     data: {"params": ["10 oz"], "method": "convert_units_to_ml", "id": 1},  // id is needed !!
-
-        //     type:"POST",
-
-        //     dataType:"json",
-        //     success:  function (data)       { alert("The result is : " + data.result);},
-        //     error: function (err)  { alert ("Error");}
-        // }
-        // var myData = ' {params: "["10 oz"]", method: "convert_units_to_ml", id: 1} ';
         var amount = document.getElementById("amount").value;
         var unit = document.getElementById("unit").value;
         param = amount + " " + unit;

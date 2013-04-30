@@ -23,8 +23,15 @@ class TestBasicRecipeStuff(unittest.TestCase):
         db.add_recipe(r)
 
         x = list(db.get_all_recipes())
+
+        r1_flag = False
+
+        for rec in x:
+            if rec.name == r.name:
+                r1_flag = True
+
         assert len(x) == 1              # should be only one recipe
-        assert r in x
+        assert r1_flag
 
     def test_add_recipe_2(self):
         r = recipes.Recipe('scotch on the rocks', [('blended scotch',
@@ -45,7 +52,7 @@ class TestBasicRecipeStuff(unittest.TestCase):
         db.add_recipe(r)
 
         x = db.get_recipe('scotch on the rocks')
-        assert x == r
+        assert x.name == r.name
 
     def test_get_recipe_2(self):
         x = db.get_recipe('scotch on the rocks')

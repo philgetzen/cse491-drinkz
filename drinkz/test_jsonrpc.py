@@ -18,6 +18,7 @@ def jsonrpc(method, params):
     environ['CONTENT_LENGTH'] = len(environ['wsgi.input'].getvalue())
 
     d = {}
+
     def my_start_response(s, h, return_in=d):
         d['status'] = s
         d['headers'] = h
@@ -27,9 +28,10 @@ def jsonrpc(method, params):
 
     status = d['status']
     headers = d['headers']
-    result_dict =  simplejson.loads(''.join(results))
+    result_dict = simplejson.loads(''.join(results))
 
     return (status, headers, result_dict)
+
 
 def test_convert_units_to_ml():
     status, headers, result = jsonrpc('convert_units_to_ml', ['10 oz'])
@@ -38,6 +40,7 @@ def test_convert_units_to_ml():
     assert ('Content-Type', 'application/json') in headers, headers
     assert status == '200 OK'
 
+
 def test_get_recipe_names():
     status, headers, result = jsonrpc('get_recipe_names', [])
 
@@ -45,6 +48,7 @@ def test_get_recipe_names():
     assert 'vodka martini' in result['result'], result['result']
     assert ('Content-Type', 'application/json') in headers, headers
     assert status == '200 OK'
+
 
 def test_get_liquor_inventory():
     status, headers, result = jsonrpc('get_liquor_inventory', [])
@@ -56,15 +60,18 @@ def test_get_liquor_inventory():
     assert ('Content-Type', 'application/json') in headers, headers
     assert status == '200 OK'
 
+
 def test_add_liquor_type():
     status, headers, result = jsonrpc('add_liquor_type', ['Val Kilmer', 'Pineapple Label', 'Absinthe'])
-    assert  result['result'] == True, result['result']
+    assert result['result'] == True, result['result']
+
 
 def test_add_liquor_inventory():
     status, headers, result = jsonrpc('add_liquor_type', ['Val Kilmer', 'Pineapple Label', 'Absinthe'])
     status, headers, result = jsonrpc('add_liquor_inventory', ['Val Kilmer', 'Pineapple Label', '200 ml'])
     assert result['result'] == True, result['result']
 
+
 def test_add_recipe():
-    status, headers, result = jsonrpc('add_recipe', ['dumb', '[(stupid, 20 oz)]'])
-    assert result['result'] ==  True, result['result']
+    status, headers, result = jsonrpc('add_recipe', ['dumb', [('stupid', '20 oz')]])
+    assert result['result'] == True, result['result']

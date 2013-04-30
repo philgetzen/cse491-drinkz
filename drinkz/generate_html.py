@@ -73,6 +73,7 @@ def generate_recipes():
 
 
 def generate_recipes_html():
+    db.sql_pull_db();   # Update our db class with the data stored in sqlite
     return env.get_template('recipes.tmpl').render(db=db._recipes_db).encode('ascii', 'ignore')
 
 
@@ -88,6 +89,7 @@ def generate_inventory():
 
 
 def generate_inventory_html():
+    db.sql_pull_db();   # Update our db class with the data stored in sqlite
     return env.get_template('inventory.tmpl').render(db=db, inventory=db._inventory_db).encode('ascii', 'ignore')
 
 ####################################################
@@ -102,6 +104,7 @@ def generate_liquor_types():
 
 
 def generate_liquor_types_html():
+    db.sql_pull_db();   # Update our db class with the data stored in sqlite
     return env.get_template('liquor_types.tmpl').render(liquor_types=db._bottle_types_db).encode('ascii', 'ignore')
 
 
@@ -168,6 +171,7 @@ def generate_liquor_inventory_form():
 
 
 def generate_liquor_inventory_form_html():
+    db.sql_pull_db();   # Update our db class with the data stored in sqlite
     return env.get_template('liquor_inventory_form.tmpl').render(quote=urllib2.quote, bottle_types=db._bottle_types_db).encode('ascii', 'ignore')
 
 ####################################################

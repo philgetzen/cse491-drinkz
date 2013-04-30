@@ -11,6 +11,7 @@ sys.path.insert(0, 'bin/')  # allow _mypath to be loaded; @CTB hack hack hack
 
 from cStringIO import StringIO
 import imp
+import sql_seed_db
 
 from . import db, load_bulk_data, recipes
 
@@ -251,5 +252,14 @@ def test_available_recipes():
 
     recipeSet = db.available_recipes()
 
-    assert r in recipeSet, recipeSet
-    assert r2 in recipeSet, recipeSet
+    r1_flag = False
+    r2_flag = False
+
+    for rec in recipeSet:
+        if rec.name == 'scotch on the rocks':
+            r1_flag = True
+        if rec.name == 'vodka martini':
+            r2_flag = True
+
+    assert r1_flag, recipeSet
+    assert r2_flag, recipeSet
