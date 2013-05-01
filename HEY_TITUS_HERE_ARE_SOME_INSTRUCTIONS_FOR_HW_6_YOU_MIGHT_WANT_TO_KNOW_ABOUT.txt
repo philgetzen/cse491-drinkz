@@ -6,7 +6,7 @@
 6.3		We have provided a script (/drinkz/sql_seed_db.py) to seed the database with useful data.
 		It would probably be a good idea to run this before starting our server.
 
-6.4		Implemented as requested, can be seen with run-web or server.py
+6.4		Implemented as requested, can be seen with run-web or server.py. Better with server.py in the main directory.
 
 6.5		Accomplishes the requested task. The "Log-In" button will create a cookie for the client
 		and "Log-Out" will clear this cookie. (If we weren't so strapped for time we would have
