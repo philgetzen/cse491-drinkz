@@ -11,31 +11,35 @@ from os import path
 import urllib2
 import recipes
 import convert
+import uuid
+from Cookie import SimpleCookie
 
 dispatch = {
-    '/' : 'index',
-    '/recipes.html' : 'recipes',
-    '/inventory.html' : 'inventory',
-    '/liquor_types.html' : 'liquor_types',
-    '/convert.html' : 'conversion_tool',
-    '/liquor_type_form.html' : 'liquor_type_form',
-    '/liquor_inventory_form.html' : 'liquor_inventory_form',
-    '/recipe_form.html' : 'recipe_form',
+    '/': 'index',
+    '/recipes.html': 'recipes',
+    '/inventory.html': 'inventory',
+    '/liquor_types.html': 'liquor_types',
+    '/convert.html': 'conversion_tool',
+    '/liquor_type_form.html': 'liquor_type_form',
+    '/liquor_inventory_form.html': 'liquor_inventory_form',
+    '/recipe_form.html': 'recipe_form',
     '/css/bootstrap.css': 'bootstrap_css',
     '/css/bootstrap-responsive.css': 'bootstrap_responsive_css',
     '/js/bootstrap.js': 'bootstrap_js',
     '/img/glyphicons-halflings.png': 'glyphicons_halflings',
     '/img/glyphicons-halflings-white.png': 'glyphicons_halflings_white',
-    '/recv_conversion' : 'recv_conversion',
-    '/recv_liquor_type' : 'recv_liquor_type',
-    '/recv_liquor_inventory' : 'recv_liquor_inventory',
-    '/recv_recipe' : 'recv_recipe',
-    '/content' : 'somefile',
-    '/error' : 'error',
-    '/helmet' : 'helmet',
-    '/form' : 'form',
-    '/recv' : 'recv',
-    '/rpc'  : 'dispatch_rpc'
+    '/recv_conversion': 'recv_conversion',
+    '/recv_liquor_type': 'recv_liquor_type',
+    '/recv_liquor_inventory': 'recv_liquor_inventory',
+    '/recv_recipe': 'recv_recipe',
+    '/content': 'somefile',
+    '/error': 'error',
+    '/helmet': 'helmet',
+    '/form': 'form',
+    '/recv': 'recv',
+    '/rpc': 'dispatch_rpc',
+    '/login1_process': 'login1_process',
+    '/logout': 'logout'
 }
 
 html_headers = [('Content-type', 'text/html')]
@@ -45,6 +49,9 @@ png_headers = [('Content-type', 'image/png')]
 
 base_dir = path.realpath(path.dirname(path.realpath(__file__)) + '/../')
 firstRun = True
+
+usernames = {}
+
 
 class SimpleApp(object):
     def __call__(self, environ, start_response):
@@ -66,12 +73,52 @@ class SimpleApp(object):
             return ["No path %s found" % path]
 
         return fn(environ, start_response)
-            
+
+    def login1_process(self, environ, start_response):
+        # formdata = environ['QUERY_STRING']
+        # results = urlparse.parse_qs(formdata)
+
+        name = 'person'
+        content_type = 'text/html'
+
+        # authentication would go here -- is this a valid username/password,
+        # for example?
+
+        k = str(uuid.uuid4())
+        usernames[k] = name
+
+        headers = list(html_headers)
+        headers.append(('Location', '/'))
+        headers.append(('Set-Cookie', 'name1=%s' % k))
+
+        start_response('302 Found', headers)
+        return ["Redirect to /..."]
+
+    def logout(self, environ, start_response):
+        if 'HTTP_COOKIE' in environ:
+            c = SimpleCookie(environ.get('HTTP_COOKIE', ''))
+            if 'name1' in c:
+                key = c.get('name1').value
+                name1_key = key
+
+                if key in usernames:
+                    del usernames[key]
+                    print 'DELETING'
+
+        pair = ('Set-Cookie',
+                'name1=deleted; Expires=Thu, 01-Jan-1970 00:00:01 GMT;')
+        headers = list(html_headers)
+        headers.append(('Location', '/'))
+        headers.append(pair)
+
+        start_response('302 Found', headers)
+        return ["Redirect to /..."]
+
     def index(self, environ, start_response):
         data = generate_html.generate_index_html()
         start_response('200 OK', list(html_headers))
         return [data]
-        
+
     def recipes(self, environ, start_response):
         data = generate_html.generate_recipes_html()
         start_response('200 OK', list(html_headers))
@@ -195,7 +242,7 @@ class SimpleApp(object):
 
         manufacturer = results['manufacturer'][0]
         liquor = results['liquor'][0]
-        typ  = results['type'][0]
+        typ = results['type'][0]
 
         db._tmp_results = []
 
@@ -277,7 +324,7 @@ class SimpleApp(object):
         # POST requests deliver input data via a file-like handle,
         # with the size of the data specified by CONTENT_LENGTH;
         # see the WSGI PEP.
-        
+
         if environ['REQUEST_METHOD'].endswith('POST'):
             body = None
             if environ.get('CONTENT_LENGTH'):
@@ -293,7 +340,7 @@ class SimpleApp(object):
         status = "404 Not Found"
         content_type = 'text/html'
         data = "Couldn't find your stuff."
-       
+
         start_response('200 OK', list(html_headers))
         return [data]
 
@@ -307,12 +354,12 @@ class SimpleApp(object):
         params = rpc_request['params']
 
         # print "Params: ", params
-        
+
         rpc_fn_name = 'rpc_' + method
         fn = getattr(self, rpc_fn_name)
         result = fn(*params)
 
-        response = { 'result' : result, 'error' : None, 'id' : 1 }
+        response = {'result': result, 'error': None, 'id': 1}
         response = simplejson.dumps(response)
         return str(response)
 
@@ -360,6 +407,7 @@ Your last name? <input type='text' name='lastname' size='20'>
 <input type='submit'>
 </form>
 """
+
 
 def recipe_result(name, typ, amount, unit):
     header, footer = generate_html.load_header_footer()

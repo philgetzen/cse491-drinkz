@@ -1,0 +1,17 @@
+6.1		This is accomplished with server.py in our main directory. An example of it handling a POST
+		request can be seen by using the conversion tool. 
+
+6.2		Yeah... we ran out of time.
+
+6.3		We have provided a script (/drinkz/sql_seed_db.py) to seed the database with useful data.
+		It would probably be a good idea to run this before starting our server.
+
+6.4		Implemented as requested, can be seen with run-web or server.py
+
+6.5		Accomplishes the requested task. The "Log-In" button will create a cookie for the client
+		and "Log-Out" will clear this cookie. (If we weren't so strapped for time we would have
+		made this actually useful; username/password, user feedback, etc.)
+
+
+Thanks,
+Mike and Phil
